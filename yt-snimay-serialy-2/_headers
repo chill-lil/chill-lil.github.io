@@ -1,0 +1,25 @@
+# Заголовки Cloudflare Pages. Правила для одного пути складываются — не пересекайте Cache-Control.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  # CSP: скрипты только свои, Meta Pixel (assets/js/pixel.js) и Яндекс Метрика (assets/js/metrika.js), видео только Bunny/YouTube.
+  # Встроить сайт в iframe можно только самой Метрике (frame-ancestors) — иначе не показываются карта кликов, скроллинга и Вебвизор;
+  # поэтому X-Frame-Options: DENY убран (с 2026-11-18). Адреса Метрики — из её справки «Установка счётчика на сайт с CSP».
+  # connect-src: два адреса (on.aws, run.app) — шлюз Conversions API, заданный в настройках пикселя (fbevents.js дублирует туда события);
+  # img-src connect.facebook.net — журнал ошибок пикселя. Сменится шлюз в Meta — поменять адреса здесь, в nginx.conf, vercel.json и META_GATEWAYS в deploy/audit.mjs и deploy/perf.mjs
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://connect.facebook.net https://mc.yandex.ru https://yastatic.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.ytimg.com https://www.facebook.com https://connect.facebook.net https://mc.yandex.ru https://mc.yandex.az https://mc.yandex.by https://mc.yandex.co.il https://mc.yandex.com https://mc.yandex.com.am https://mc.yandex.com.ge https://mc.yandex.com.tr https://mc.yandex.ee https://mc.yandex.fr https://mc.yandex.kg https://mc.yandex.kz https://mc.yandex.lt https://mc.yandex.lv https://mc.yandex.md https://mc.yandex.tj https://mc.yandex.tm https://mc.yandex.uz https://mc.webvisor.com https://mc.webvisor.org; font-src 'self' data:; connect-src 'self' https://cloudflareinsights.com https://connect.facebook.net https://www.facebook.com https://od-18c216b54e2045bdbb2d2f70bc4834b0.ecs.us-east-2.on.aws https://bded8a3c6ae-1-1053047382554.us-central1.run.app https://*.b-cdn.net https://script.google.com https://script.googleusercontent.com https://mc.yandex.ru https://mc.yandex.az https://mc.yandex.by https://mc.yandex.co.il https://mc.yandex.com https://mc.yandex.com.am https://mc.yandex.com.ge https://mc.yandex.com.tr https://mc.yandex.ee https://mc.yandex.fr https://mc.yandex.kg https://mc.yandex.kz https://mc.yandex.lt https://mc.yandex.lv https://mc.yandex.md https://mc.yandex.tj https://mc.yandex.tm https://mc.yandex.uz https://mc.webvisor.com https://mc.webvisor.org wss://mc.yandex.ru wss://mc.yandex.az wss://mc.yandex.by wss://mc.yandex.co.il wss://mc.yandex.com wss://mc.yandex.com.am wss://mc.yandex.com.ge wss://mc.yandex.com.tr wss://mc.yandex.ee wss://mc.yandex.fr wss://mc.yandex.kg wss://mc.yandex.kz wss://mc.yandex.lt wss://mc.yandex.lv wss://mc.yandex.md wss://mc.yandex.tj wss://mc.yandex.tm wss://mc.yandex.uz wss://mc.webvisor.com wss://mc.webvisor.org https://signals.birch.click; frame-src blob: https://mc.yandex.ru https://*.mediadelivery.net https://www.youtube-nocookie.com https://www.facebook.com; child-src blob: https://mc.yandex.ru; media-src 'self' blob: https://*.b-cdn.net; object-src 'none'; base-uri 'self'; form-action 'self' https://www.facebook.com; frame-ancestors 'self' https://metrika.yandex.ru https://analytics.yandex.by https://analytics.yandex.com https://analytics.yandex.com.tr https://analytics.yandex.kz https://analytics.yandex.ru https://metr.yandex.by https://metr.yandex.com https://metr.yandex.com.tr https://metr.yandex.kz https://metr.yandex.ru https://metrica.ya.ru https://metrica.yandex https://metrica.yandex.by https://metrica.yandex.com https://metrica.yandex.com.tr https://metrica.yandex.kz https://metrica.yandex.ru https://metrika.ya.ru https://metrika.yandex https://metrika.yandex.by https://metrika.yandex.com https://metrika.yandex.com.tr https://metrika.yandex.kz https://metrika.yandex.uz; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000
+  Cross-Origin-Opener-Policy: same-origin
+
+# CSS/JS в HTML с ?v=<хеш>, библиотеки и шрифты не меняются — кэш на год
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/img/*
+  Cache-Control: public, max-age=2592000
